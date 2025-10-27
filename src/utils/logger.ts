@@ -5,30 +5,32 @@ enum LogLevel {
     DEBUG = "DEBUG",
 }
 
-const timestamp = () => new Date().toISOString();
+function timestamp() {
+    return new Date().toISOString();
+}
 
-const formatMessage = (level: LogLevel, message: string, meta?: any) => {
+function formatMessage(level: LogLevel, message: string, meta?: any) {
     const base = `[${timestamp()}] [${level}] ${message}`;
     if (meta) {
         return `${base} ${JSON.stringify(meta)}`;
     }
     return base;
-};
+}
 
 export const logger = {
-    info: (message: string, meta?: any) => {
+    info: function (message: string, meta?: any) {
         console.log(formatMessage(LogLevel.INFO, message, meta));
     },
 
-    warn: (message: string, meta?: any) => {
+    warn: function (message: string, meta?: any) {
         console.warn(formatMessage(LogLevel.WARN, message, meta));
     },
 
-    error: (message: string, meta?: any) => {
+    error: function (message: string, meta?: any) {
         console.error(formatMessage(LogLevel.ERROR, message, meta));
     },
 
-    debug: (message: string, meta?: any) => {
+    debug: function (message: string, meta?: any) {
         if (process.env.NODE_ENV !== "production") {
             console.debug(formatMessage(LogLevel.DEBUG, message, meta));
         }

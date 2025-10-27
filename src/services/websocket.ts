@@ -1,17 +1,23 @@
 import { WebSocketServer, WebSocket } from "ws";
-import { EventService } from "./event.js";
+import {
+    getDriverEvents,
+    addSubscription,
+    removeSubscription,
+} from "@utils/redis.js";
 import { logger } from "@utils/logger.js";
+import crypto from "crypto";
+import type { DriverEvent } from "@typings/driver.js";
 
 export const subscriptions = new Map<
     WebSocket,
-    { driverId: string; since?: string }
+    { driverId: string; wsId: string }
 >();
 export let wss: WebSocketServer;
 
-export const initWebSocket = (server: any) => {
+export function initWebSocket(server: any) {
     wss = new WebSocketServer({ server, path: "/ws" });
 
-    wss.on("connection", (socket, req) => {
+    wss.on("connection", async (socket, req) => {
         const url = new URL(req.url ?? "", "http://localhost");
         const token = url.searchParams.get("token");
 
@@ -24,28 +30,45 @@ export const initWebSocket = (server: any) => {
         const driverId = url.searchParams.get("driver_id") || "";
         const since = url.searchParams.get("since") || "";
 
-        subscriptions.set(socket, { driverId, since });
+        // generate unique wsId for this connection
+        const wsId = crypto.randomUUID();
 
+        // Send past events
         if (driverId) {
-            const pastEvents = EventService.getEventsSince(driverId, since);
+            subscriptions.set(socket, { driverId, wsId });
+            await addSubscription(driverId, wsId);
 
+            const pastEvents = await getDriverEvents(driverId, since);
             for (const ev of pastEvents) {
                 socket.send(JSON.stringify(ev));
             }
         }
 
+        // Handle incoming messages (optional)
         socket.on("message", (msg) => {
             logger.info(
                 `Message from ${driverId || "unknown"}: ${msg.toString()}`
             );
         });
 
-        // Handle disconnection
-        socket.on("close", () => {
+        // Handle disconnect
+        socket.on("close", async () => {
             logger.info(`WS DISCONNECTED: ${driverId}`);
             subscriptions.delete(socket);
+            if (driverId) await removeSubscription(driverId, wsId);
         });
     });
 
     logger.info("WebSocket server initialized at /ws");
-};
+}
+
+export async function broadcastDriverEvent(event: DriverEvent) {
+    for (const [socket, sub] of subscriptions) {
+        if (
+            sub.driverId === event.data.driver_id &&
+            socket.readyState === socket.OPEN
+        ) {
+            socket.send(JSON.stringify(event));
+        }
+    }
+}
