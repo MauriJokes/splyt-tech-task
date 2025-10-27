@@ -1,0 +1,35 @@
+{
+    "name": "splyt-tech-task",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "start": "node dist/server.js",
+        "build": "tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "body-parser": "^2.2.0",
+        "dotenv": "^17.2.3",
+        "express": "^5.1.0",
+        "express-rate-limit": "^8.1.0",
+        "ioredis": "^5.8.2",
+        "joi": "^18.0.1",
+        "nodemon": "^3.1.10",
+        "ws": "^8.18.3",
+        "wscat": "^6.1.0"
+    },
+    "type": "module",
+    "devDependencies": {
+        "@types/express": "^5.0.4",
+        "@types/joi": "^17.2.3",
+        "@types/node": "^24.9.1",
+        "@types/ws": "^8.18.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
+    }
+}

@@ -1,0 +1,59 @@
+{
+    "compilerOptions": {
+        /* ==== File Layout ==== */
+        "rootDir": "./src",
+        "outDir": "./dist",
+
+        /* ==== Environment Settings ==== */
+        "module": "NodeNext",
+        "target": "ESNext",
+        "moduleResolution": "NodeNext",
+        "lib": ["ESNext"],
+        "types": ["node"],
+
+        /* ==== Output Options ==== */
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+
+        /* ==== Type Checking ==== */
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+
+        /* ==== Style / Code Quality ==== */
+        // Uncomment these later for even stricter linting
+        // "noImplicitReturns": true,
+        // "noImplicitOverride": true,
+        // "noUnusedLocals": true,
+        // "noUnusedParameters": true,
+        // "noFallthroughCasesInSwitch": true,
+        // "noPropertyAccessFromIndexSignature": true,
+
+        /* ==== Path Aliases Settings ==== */
+        "baseUrl": "./src",
+        "paths": {
+            "@config/*": ["config/*"],
+            "@controllers/*": ["controllers/*"],
+            "@middlewares/*": ["middlewares/*"],
+            "@routes/*": ["routes/*"],
+            "@services/*": ["services/*"],
+            "@typings/*": ["types/*"],
+            "@utils/*": ["utils/*"],
+            "@validations/*": ["validations/*"]
+        },
+
+        /* ==== Modern Module Settings ==== */
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+
+        /* ==== Misc ==== */
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
+}
