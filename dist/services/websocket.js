@@ -1,29 +1,48 @@
-import { WebSocketServer } from "ws";
-import { EventService } from "./event.js";
+import { WebSocketServer, WebSocket } from "ws";
+import { getDriverEvents, addSubscription, removeSubscription, } from "@utils/redis.js";
+import { logger } from "@utils/logger.js";
+import crypto from "crypto";
 export const subscriptions = new Map();
 export let wss;
-export const initWebSocket = (server) => {
+export function initWebSocket(server) {
     wss = new WebSocketServer({ server, path: "/ws" });
-    wss.on("connection", (socket, req) => {
+    wss.on("connection", async (socket, req) => {
         const url = new URL(req.url ?? "", "http://localhost");
-        console.log("WS CONNECTED", req.url);
+        const token = url.searchParams.get("token");
+        if (!token || token !== process.env.JWT_SECRET) {
+            socket.close(4001, "Unauthorized");
+            logger.error("Missing token", req.url);
+            return;
+        }
         const driverId = url.searchParams.get("driver_id") || "";
         const since = url.searchParams.get("since") || "";
-        subscriptions.set(socket, { driverId, since });
-        // Send historical events first
+        // generate unique wsId for this connection
+        const wsId = crypto.randomUUID();
+        // Send past events
         if (driverId) {
-            const pastEvents = EventService.getEventsSince(driverId, since);
-            for (const ev of pastEvents)
+            subscriptions.set(socket, { driverId, wsId });
+            await addSubscription(driverId, wsId);
+            const pastEvents = await getDriverEvents(driverId, since);
+            for (const ev of pastEvents) {
                 socket.send(JSON.stringify(ev));
+            }
         }
-        socket.on("close", () => {
+        // Handle disconnect
+        socket.on("close", async () => {
+            logger.info(`WS DISCONNECTED: ${driverId}`);
             subscriptions.delete(socket);
+            if (driverId)
+                await removeSubscription(driverId, wsId);
         });
     });
-    // wss.on("connection", (ws) => {
-    //     console.log("New WS connection");
-    //     ws.on("message", (msg) => console.log("Message:", msg.toString()));
-    // });
-    console.log("✅ WebSocket server initialized at /ws");
-};
+    logger.info("WebSocket server initialized at /ws");
+}
+export async function broadcastDriverEvent(event) {
+    for (const [socket, sub] of subscriptions) {
+        if (sub.driverId === event.data.driver_id &&
+            socket.readyState === socket.OPEN) {
+            socket.send(JSON.stringify(event));
+        }
+    }
+}
 //# sourceMappingURL=websocket.js.map

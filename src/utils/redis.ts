@@ -1,7 +1,8 @@
-import { Redis } from "ioredis";
+import Redis from "ioredis";
 import type { RedisOptions } from "ioredis";
-import type { DriverEvent } from "@typings/driver.js";
+import type { DriverEvent } from "@typings/driver";
 
+//@ts-ignore
 const redis = new Redis({
     host: process.env.REDIS_HOST || "127.0.0.1",
     port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
@@ -10,7 +11,7 @@ const redis = new Redis({
 export async function addDriverEvent(driverEvent: DriverEvent) {
     const key = `driver:${driverEvent.data.driver_id}:events`;
     const score = new Date(driverEvent.data.timestamp).getTime();
-    const value = JSON.stringify(driverEvent.data.timestamp);
+    const value = JSON.stringify(driverEvent);
 
     await redis.zadd(key, score, value);
 }
@@ -33,9 +34,4 @@ export async function addSubscription(driverId: string, wsId: string) {
 export async function removeSubscription(driverId: string, wsId: string) {
     const key = `ws:driver:${driverId}`;
     await redis.srem(key, wsId);
-}
-
-export async function getSubscriptions(driverId: string) {
-    const key = `ws:driver:${driverId}`;
-    return await redis.smembers(key);
 }

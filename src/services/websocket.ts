@@ -3,10 +3,10 @@ import {
     getDriverEvents,
     addSubscription,
     removeSubscription,
-} from "@utils/redis.js";
-import { logger } from "@utils/logger.js";
+} from "@utils/redis";
+import { logger } from "@utils/logger";
 import crypto from "crypto";
-import type { DriverEvent } from "@typings/driver.js";
+import type { DriverEvent } from "@typings/driver";
 
 export const subscriptions = new Map<
     WebSocket,
@@ -43,13 +43,6 @@ export function initWebSocket(server: any) {
                 socket.send(JSON.stringify(ev));
             }
         }
-
-        // Handle incoming messages (optional)
-        socket.on("message", (msg) => {
-            logger.info(
-                `Message from ${driverId || "unknown"}: ${msg.toString()}`
-            );
-        });
 
         // Handle disconnect
         socket.on("close", async () => {

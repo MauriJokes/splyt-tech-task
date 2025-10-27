@@ -33,18 +33,17 @@
         /* ==== Path Aliases Settings ==== */
         "baseUrl": "./src",
         "paths": {
-            "@config/*": ["config/*"],
-            "@controllers/*": ["controllers/*"],
-            "@middlewares/*": ["middlewares/*"],
-            "@routes/*": ["routes/*"],
-            "@services/*": ["services/*"],
-            "@typings/*": ["types/*"],
-            "@utils/*": ["utils/*"],
-            "@validations/*": ["validations/*"]
+            "@routes/*": ["routes/*.ts"],
+            "@controllers/*": ["controllers/*.ts"],
+            "@middlewares/*": ["middlewares/*.ts"],
+            "@services/*": ["services/*.ts"],
+            "@utils/*": ["utils/*.ts"],
+            "@typings/*": ["types/*.ts"],
+            "@validations/*": ["validations/*.ts"]
         },
 
         /* ==== Modern Module Settings ==== */
-        "verbatimModuleSyntax": true,
+        "verbatimModuleSyntax": false,
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
