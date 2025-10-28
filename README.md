@@ -10,10 +10,11 @@ This project is a small service that ingests location webhooks from Splyt and ex
 
 - **Express Server**: Handles HTTP requests.
 - **`/event` Endpoint**: Accepts POST requests with driver events and validates the payload using **Joi**.
-- **In-Memory Event Storage**: Stores driver events temporarily in memory.
+- **Redis Event Storage**: Stores driver events in redis.
 - **WebSocket Server**: Allows clients to subscribe to events per driver and receive updates in real-time.
 - **Rate Limiting Middleware**: Prevents abuse of the `/event` endpoint.
 - **Simple Token Validation for WebSocket**: Ensures that only authorized clients can connect.
+- **Automated unit and integration testing**: Handles automated testing using Jest
 
 ---
 
@@ -52,3 +53,6 @@ Approximately **2 days** were spent on this task, including:
 - **Centralized Logging**: Using a `logger` utility.
 - **Route-Specific Rate Limiter**: Protects the `/event` endpoint.
 - **Simple WebSocket Token Validation**: Ensures only authorized clients can connect.
+- **Automated unit and integration testing**: Handles automated testing using Jest
+
+
